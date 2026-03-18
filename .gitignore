@@ -1,0 +1,37 @@
+# =============================================================================
+# MM-FIS：仓库仅保留「实验」相关代码（experiment/ + 启动脚本 scripts/）
+# 根目录其余内容一律不纳入版本控制；数据、权重、日志等见下方 experiment 内规则
+# =============================================================================
+
+# ---- 忽略仓库根目录下除白名单外的所有路径 ----
+/*
+!.gitignore
+!README.md
+!/experiment/
+!/experiment/**
+!/scripts/
+!/scripts/**
+
+# ---- scripts 内局部忽略 ----
+scripts/nohup.out
+scripts/*.out
+scripts/*.log
+
+# ---- experiment 目录内常见不应提交项 ----
+experiment/**/__pycache__/
+experiment/**/*.py[cod]
+experiment/**/*.so
+experiment/.pytest_cache/
+experiment/.mypy_cache/
+experiment/.ruff_cache/
+experiment/checkpoints/
+experiment/**/*.pt
+experiment/**/*.pth
+experiment/**/*.ckpt
+experiment/**/*.npy
+experiment/**/*.npz
+experiment/**/.DS_Store
+experiment/**/*.log
+
+# 若 splits 需从预处理重新生成、不想入库，可取消下行注释
+# experiment/splits/

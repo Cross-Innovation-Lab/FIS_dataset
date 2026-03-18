@@ -1,0 +1,60 @@
+{
+  "_desc": "E: large compressed_len=96, d_model=192, moderate regularization",
+  "data": {
+    "csv_path": "/CIL_PROJECTS/CODES/MM_FIS/dataset/all_labels_Valid.csv",
+    "feature_root": "/CIL_PROJECTS/CODES/MM_FIS/dataset/FIS_dataset",
+    "feature_source": "raw",
+    "feature_categories": ["audio", "video", "text"],
+    "task": 2,
+    "counselor_role": "Counselor",
+    "patient_role": "Patient",
+    "max_len_word": null,
+    "max_len_tok": 128,
+    "num_workers": 2
+  },
+  "model": {
+    "name": "tcdyfis_v2",
+    "kwargs": {
+      "task": 2,
+      "n_labels": 9,
+      "video_dim": 235,
+      "audio_wav2vec_dim": 768,
+      "audio_librosa_dim": 93,
+      "text_dim": 1024,
+      "d_model": 192,
+      "d_audio": 192,
+      "n_heads": 4,
+      "conv_kernel": 7,
+      "n_temporal_blocks": 2,
+      "compressed_len": 96,
+      "text_compressed_len": 48,
+      "head_hidden": 192,
+      "dropout": 0.3,
+      "share_encoders": true,
+      "dyadic_layers": 1,
+      "use_visual": true,
+      "use_audio": true,
+      "use_text": true,
+      "input_noise_std": 0.02
+    }
+  },
+  "train": {
+    "batch_size": 4,
+    "epochs": 40,
+    "lr": 0.0002,
+    "weight_decay": 0.02,
+    "grad_clip": 1.0,
+    "ccc_loss_weight": 0.2,
+    "split_spec": "16:4:5",
+    "split_group_by": "session_prefix",
+    "split_file": "/CIL_PROJECTS/CODES/MM_FIS/experiment/splits/valid_split.json",
+    "seed": 42,
+    "device": "cuda:0"
+  },
+  "experiment": {
+    "output_dir": "/CIL_PROJECTS/CODES/MM_FIS/outs-baselines",
+    "ckpt_dir": "/CIL_PROJECTS/CODES/MM_FIS/checkpoints",
+    "run_name": "tcdyfis_v2_task2_E",
+    "save_best_by": "val_human_sim_specified"
+  }
+}

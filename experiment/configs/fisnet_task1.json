@@ -1,0 +1,61 @@
+{
+  "data": {
+    "csv_path": "/CIL_PROJECTS/CODES/MM_FIS/dataset/all_labels_Valid.csv",
+    "feature_root": "/CIL_PROJECTS/CODES/MM_FIS/dataset/FIS_dataset",
+    "task": 1,
+    "counselor_role": "Counselor",
+    "max_len_word": null,
+    "max_len_tok": 128,
+    "num_workers": 2
+  },
+  "model": {
+    "name": "fis_net",
+    "kwargs": {
+      "task": 1,
+      "d_model": 256,
+      "n_labels": 9,
+      "video_dim": 235,
+      "audio_wav2vec_dim": 768,
+      "audio_librosa_dim": 93,
+      "text_dim": 1024,
+      "d_group": 128,
+      "d_audio": 256,
+      "mamba_n_layers": 4,
+      "mamba_d_state": 16,
+      "mamba_d_conv": 4,
+      "mamba_expand": 2,
+      "coupled_n_layers": 2,
+      "cross_attn_heads": 4,
+      "cross_attn_dropout": 0.1,
+      "pool_hidden": 128,
+      "head_hidden": 256,
+      "head_dropout": 0.2,
+      "use_visual": true,
+      "use_audio": true,
+      "use_text": true,
+      "use_stage1_fusion": true,
+      "use_stage2_fusion": true,
+      "use_grouping_attn": true,
+      "use_audio_gate": false
+    }
+  },
+  "train": {
+    "batch_size": 8,
+    "epochs": 30,
+    "lr": 5e-4,
+    "weight_decay": 0.01,
+    "grad_clip": 1.0,
+    "train_ratio": 0.64,
+    "val_ratio": 0.16,
+    "split_spec": "16:4:5",
+    "split_file": "/CIL_PROJECTS/CODES/MM_FIS/experiment/splits/fisnet_task1_split.json",
+    "seed": 42,
+    "device": "cuda:1"
+  },
+  "experiment": {
+    "output_dir": "/CIL_PROJECTS/CODES/MM_FIS/outs-baselines",
+    "ckpt_dir": "/CIL_PROJECTS/CODES/MM_FIS/checkpoints",
+    "run_name": "fisnet_task1",
+    "save_best_by": "val_mae"
+  }
+}

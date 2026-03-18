@@ -1,0 +1,49 @@
+{
+  "data": {
+    "csv_path": "/CIL_PROJECTS/CODES/MM_FIS/dataset/all_labels_Valid.csv",
+    "feature_root": "/CIL_PROJECTS/CODES/MM_FIS/dataset/FIS_dataset",
+    "task": 1,
+    "counselor_role": "Counselor",
+    "max_len_word": 128,
+    "max_len_tok": 128,
+    "num_workers": 2
+  },
+  "model": {
+    "name": "segrnn",
+    "kwargs": {
+      "task": 1,
+      "video_dim": 235,
+      "audio_dim": 768,
+      "text_dim": 1024,
+      "hidden_dim": 256,
+      "n_labels": 9,
+      "dropout": 0.2,
+      "use_visual": true,
+      "use_audio": true,
+      "use_text": true,
+      "text_pool": "mean_pool",
+      "seq_len": 128,
+      "seg_len": 8,
+      "d_model": 256
+    }
+  },
+  "train": {
+    "batch_size": 8,
+    "epochs": 30,
+    "lr": 5e-4,
+    "weight_decay": 0.01,
+    "grad_clip": 1.0,
+    "train_ratio": 0.64,
+    "val_ratio": 0.16,
+    "split_spec": "16:4:5",
+    "split_file": "/CIL_PROJECTS/CODES/MM_FIS/experiment/splits/segrnn_task1_split.json",
+    "seed": 42,
+    "device": "cuda"
+  },
+  "experiment": {
+    "output_dir": "/CIL_PROJECTS/CODES/MM_FIS/outs",
+    "ckpt_dir": "/CIL_PROJECTS/CODES/MM_FIS/checkpoints",
+    "run_name": "segrnn_task1",
+    "save_best_by": "val_mae"
+  }
+}
