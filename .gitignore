@@ -9,8 +9,8 @@
 !README.md
 !/experiment/
 !/experiment/**
-!/scripts/
-!/scripts/**
+!/scripts/run_baselines
+!/scripts/run_tcdyfis
 
 # ---- scripts 内局部忽略 ----
 scripts/nohup.out
