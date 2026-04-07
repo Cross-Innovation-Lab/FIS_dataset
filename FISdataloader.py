@@ -11,10 +11,8 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset
 
-# FEATURE_ROOT = "/absolute/path/to/your/feature/folder"
-# LABEL_CSV_PATH = "/absolute/path/to/your/label/file.csv"
-FEATURE_ROOT = "/CIL_PROJECTS/CODES/MM_FIS/dataset/FIS_dataset/Counselor"
-LABEL_CSV_PATH = "/CIL_PROJECTS/CODES/MM_FIS/dataset/all_labels_Valid.csv"
+FEATURE_ROOT = "/absolute/path/to/your/feature/folder"
+LABEL_CSV_PATH = "/absolute/path/to/your/label/file.csv"
 FEATURE_SOURCE = "raw"
 FEATURE_CATEGORIES = ["audio", "video", "text"]
 PREVIEW_SAMPLE_COUNT = 3
