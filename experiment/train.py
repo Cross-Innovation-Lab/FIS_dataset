@@ -16,7 +16,13 @@ import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, Subset
 
-from experiment.config import Config, load_config
+from experiment.config import (
+    DEFAULT_SPLIT_SPEC,
+    Config,
+    default_split_path,
+    load_config,
+    resolve_split_path,
+)
 from experiment.dataloader import FISDataset, LABEL_COLUMNS, collate_fis_batch, normalize_sample_id
 from experiment.metrics import concordance_correlation_coefficient, regression_metrics
 
@@ -36,7 +42,7 @@ def set_seed(seed: int) -> None:
 def _parse_split_spec(split_spec: str) -> tuple[int, int, int]:
     parts = [p.strip() for p in str(split_spec).split(":")]
     if len(parts) != 3:
-        raise ValueError(f"split_spec 格式错误: {split_spec}，期望形如 16:4:5")
+        raise ValueError(f"split_spec 格式错误: {split_spec}，期望形如 8:1:1")
     train_u, val_u, test_u = (int(p) for p in parts)
     if min(train_u, val_u, test_u) < 0 or (train_u + val_u + test_u) <= 0:
         raise ValueError(f"split_spec 非法: {split_spec}")
@@ -345,16 +351,19 @@ def build_loaders(cfg: Config, split_output_path: Path | None = None) -> tuple[D
         patient_basename_map=Path(cfg.data.patient_basename_map_csv) if getattr(cfg.data, "patient_basename_map_csv", None) else None,
     )
     split_file = getattr(cfg.train, "split_file", None)
-    split_path = Path(split_file).expanduser() if split_file else (
-        Path(split_output_path).expanduser() if split_output_path is not None else None
-    )
+    if split_file:
+        split_path = resolve_split_path(split_file)
+    elif split_output_path is not None:
+        split_path = Path(split_output_path).expanduser()
+    else:
+        split_path = default_split_path(cfg.data.task)
     if split_path is not None and split_path.exists():
         split_ids = load_split_manifest(split_path)
         cfg.train.split_file = str(split_path.resolve())
     else:
         split_ids = make_reproducible_split_ids(
             dataset.df["ID"].astype(str).str.strip().tolist(),
-            getattr(cfg.train, "split_spec", "16:4:5"),
+            getattr(cfg.train, "split_spec", DEFAULT_SPLIT_SPEC),
             cfg.train.seed,
             getattr(cfg.train, "split_group_by", "none"),
         )
@@ -362,7 +371,7 @@ def build_loaders(cfg: Config, split_output_path: Path | None = None) -> tuple[D
             save_split_manifest(
                 split_path,
                 split_ids,
-                split_spec=getattr(cfg.train, "split_spec", "16:4:5"),
+                split_spec=getattr(cfg.train, "split_spec", DEFAULT_SPLIT_SPEC),
                 seed=cfg.train.seed,
                 csv_path=cfg.data.csv_path,
                 group_by=getattr(cfg.train, "split_group_by", "none"),
@@ -447,7 +456,7 @@ def run_training(cfg: Config) -> Path:
 
     opt = torch.optim.AdamW(model.parameters(), lr=cfg.train.lr, weight_decay=cfg.train.weight_decay)
     split_output_path = (
-        Path(getattr(cfg.train, "split_file", "")).expanduser()
+        resolve_split_path(cfg.train.split_file)
         if getattr(cfg.train, "split_file", None)
         else (out_dir / "data_split.json")
     )
@@ -457,7 +466,7 @@ def run_training(cfg: Config) -> Path:
     (out_dir / "config.json").write_text(cfg_json, encoding="utf-8")
     logger.info(f"config saved to {out_dir / 'config.json'}")
     logger.info(f"数据集大小 : train={len(train_loader.dataset)}, val={len(val_loader.dataset)}, test={len(test_loader.dataset)}")
-    logger.info(f"数据划分   : split_spec={getattr(cfg.train, 'split_spec', '16:4:5')}, seed={cfg.train.seed}")
+    logger.info(f"数据划分   : split_spec={getattr(cfg.train, 'split_spec', DEFAULT_SPLIT_SPEC)}, seed={cfg.train.seed}")
     logger.info(f"划分分组   : split_group_by={getattr(cfg.train, 'split_group_by', 'none')}")
     if getattr(cfg.train, "split_file", None):
         logger.info(f"划分文件   : {cfg.train.split_file}")

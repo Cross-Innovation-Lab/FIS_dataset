@@ -7,11 +7,37 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+# 默认 train:val:test 比例（8:1:1 → 80% / 10% / 10%）
+DEFAULT_SPLIT_SPEC = "8:1:1"
+DEFAULT_SPLIT_SEED = 42
+DEFAULT_SPLIT_GROUP_BY = "none"
+
+
+def project_root() -> Path:
+    """FIS_dataset 仓库根目录（experiment/ 的上一级）。"""
+    return Path(__file__).resolve().parent.parent
+
+
+def default_split_path(task: int, experiment_root: Path | None = None) -> Path:
+    """任务一/任务二默认划分 manifest 路径：experiment/splits/task{1|2}_split.json。"""
+    if task not in (1, 2):
+        raise ValueError(f"task 须为 1 或 2，收到: {task}")
+    root = experiment_root or Path(__file__).resolve().parent
+    return root / "splits" / f"task{task}_split.json"
+
+
+def resolve_split_path(split_file: str | Path, repo_root: Path | None = None) -> Path:
+    """将配置中的 split_file 解析为绝对路径（相对路径相对于 FIS_dataset 根目录）。"""
+    path = Path(split_file).expanduser()
+    if path.is_absolute():
+        return path.resolve()
+    return (repo_root or project_root()) / path
+
 
 @dataclass
 class DataConfig:
-    csv_path: str = "/CIL_PROJECTS/CODES/MM_FIS/dataset/all_labels_Valid.csv"
-    feature_root: str = "/CIL_PROJECTS/CODES/MM_FIS/dataset/FIS_dataset"
+    csv_path: str = "dataset/all_labels_Valid.csv"
+    feature_root: str = "dataset/FIS_dataset"
     feature_source: str = "raw"
     feature_categories: list[str] = field(default_factory=lambda: ["audio", "video", "text"])
     # 已剔除 avalid 机制：样本仅由标签 CSV 决定；不再使用 valid_id_csv 过滤
@@ -53,20 +79,20 @@ class TrainConfig:
     weight_decay: float = 0.01
     grad_clip: float = 0.0  # 梯度裁剪，0 表示不裁剪
     ccc_loss_weight: float = 0.0
-    # 兼容旧配置保留 train_ratio / val_ratio，默认与 16:4:5 一致。
-    train_ratio: float = 16 / 25
-    val_ratio: float = 4 / 25
-    split_spec: str = "16:4:5"
-    split_group_by: str = "none"
-    split_file: str | None = None
+    # 兼容旧配置保留 train_ratio / val_ratio，默认与 8:1:1 一致。
+    train_ratio: float = 0.8
+    val_ratio: float = 0.1
+    split_spec: str = DEFAULT_SPLIT_SPEC
+    split_group_by: str = DEFAULT_SPLIT_GROUP_BY
+    split_file: str | None = None  # 留空则按 data.task 使用 default_split_path(task)
     seed: int = 42
     device: str = "cuda"
 
 
 @dataclass
 class ExperimentConfig:
-    output_dir: str = "/CIL_PROJECTS/CODES/MM_FIS/outs"
-    ckpt_dir: str = "/CIL_PROJECTS/CODES/MM_FIS/checkpoints"
+    output_dir: str = "pth/outs"
+    ckpt_dir: str = "pth/checkpoints"
     run_name: str = ""  # 留空则自动按 model_name + 时间戳生成
     save_best_by: str = "val_mae"
 

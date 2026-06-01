@@ -22,7 +22,7 @@ def parse_args() -> argparse.Namespace:
     p_train = sp.add_parser("train", help="训练模型")
     p_train.add_argument(
         "--config", type=str,
-        default="/CIL_PROJECTS/CODES/MM_FIS/experiment/configs/default.json",
+        default="pth/configs/default.json",
         help="JSON 配置文件路径",
     )
     p_train.add_argument(
@@ -34,7 +34,7 @@ def parse_args() -> argparse.Namespace:
     p_eval.add_argument("--ckpt", type=str, required=True, help="checkpoint 路径")
     p_eval.add_argument(
         "--config", type=str,
-        default="/CIL_PROJECTS/CODES/MM_FIS/experiment/configs/default.json",
+        default="pth/configs/default.json",
     )
     p_eval.add_argument("--split", type=str, default="test", choices=["train", "val", "test"])
     p_eval.add_argument(

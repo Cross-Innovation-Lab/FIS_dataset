@@ -4,7 +4,11 @@
     "csv_path": "/CIL_PROJECTS/CODES/MM_FIS/dataset/all_labels_Valid.csv",
     "feature_root": "/CIL_PROJECTS/CODES/MM_FIS/dataset/FIS_dataset",
     "feature_source": "raw",
-    "feature_categories": ["audio", "video", "text"],
+    "feature_categories": [
+      "audio",
+      "video",
+      "text"
+    ],
     "task": 2,
     "counselor_role": "Counselor",
     "patient_role": "Patient",
@@ -45,11 +49,13 @@
     "weight_decay": 0.05,
     "grad_clip": 1.0,
     "ccc_loss_weight": 0.3,
-    "split_spec": "16:4:5",
-    "split_group_by": "session_prefix",
-    "split_file": "/CIL_PROJECTS/CODES/MM_FIS/experiment/splits/valid_split.json",
+    "split_spec": "8:1:1",
+    "split_group_by": "none",
+    "split_file": "experiment/splits/task2_split.json",
     "seed": 42,
-    "device": "cuda:0"
+    "device": "cuda:0",
+    "train_ratio": 0.8,
+    "val_ratio": 0.1
   },
   "experiment": {
     "output_dir": "/CIL_PROJECTS/CODES/MM_FIS/outs-baselines",
